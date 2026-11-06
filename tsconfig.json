@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"], "strict": true,
+    "noEmit": true, "allowImportingTsExtensions": true, "skipLibCheck": true,
+    "types": [],
+    "paths": {
+      "@deepseek-ai/cordis": ["/Users/haoranx98/code/deepseek-harness/vendor/cordis/lib/types/index.d.ts"],
+      "@deepseek-ai/dsh-client-ui-theme/client": ["/Users/haoranx98/code/deepseek-harness/packages/client/ui-theme/lib/types/client/index.d.ts"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

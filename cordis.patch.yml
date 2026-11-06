@@ -1,0 +1,8 @@
+- insert:
+    - id: galaxy-skin
+      name: dsh-skin-galaxy
+      config:
+        speed: 0.65
+        intensity: 0.8
+        pixelRatio: 1.25
+        fps: 30

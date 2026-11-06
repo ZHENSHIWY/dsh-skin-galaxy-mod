@@ -1,0 +1,23 @@
+{
+  "name": "dsh-skin-galaxy",
+  "version": "0.1.3",
+  "description": "星河 · A procedural WebGPU Milky Way skin for DeepSeek Harness",
+  "type": "module",
+  "license": "MIT",
+  "author": "Haoran Xu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haoranx98/dsh-skin-galaxy.git"
+  },
+  "homepage": "https://github.com/haoranx98/dsh-skin-galaxy#readme",
+  "bugs": { "url": "https://github.com/haoranx98/dsh-skin-galaxy/issues" },
+  "keywords": ["dsh", "dsh-plugin", "dsh-skin", "webgpu", "wgsl", "theme", "galaxy", "nebula"],
+  "main": "./lib/index.js",
+  "exports": { ".": "./lib/index.js", "./client": "./lib/client.js", "./package.json": "./package.json" },
+  "files": ["lib", "cordis.patch.yml", "README.md", "screenshots/dsh-galaxy.png", "LICENSE"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "inject": ["@deepseek-ai/dsh-client-ui-theme"], "platform": "web" }
+  },
+  "scripts": { "build": "node build.mjs", "test": "node --test tests/*.test.mjs", "preview": "node preview/server.mjs" }
+}

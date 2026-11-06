@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星河 · Galaxy / DSH skin preview</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#edf0ff;background:#040817}button{font:inherit;color:inherit;cursor:pointer}#root{height:100vh;display:grid;grid-template-columns:258px 1fr}.sidebar{background:var(--dsw-specific-sidebar-fill);border-right:1px solid #adb8ef20;padding:32px 20px;display:flex;flex-direction:column;gap:32px}.brand{font-size:18px;letter-spacing:.06em;font-weight:600}.brand span{color:#b0a5ff}.new{padding:13px;border:1px solid #aca5ff44;border-radius:12px;background:#b0a5ff12;text-align:left}.caption{font-size:10px;letter-spacing:.17em;color:#8592b2}.sessions{display:grid;gap:8px}.session{padding:13px 12px;color:#b8c2de;border-radius:10px}.session.active{background:#b0a5ff14;border:1px solid #b0a5ff20;color:#e1dfff}.foot{margin-top:auto;display:grid;gap:13px;color:#b8c2de;font-size:12px}.main{display:flex;flex-direction:column;min-width:0}.top{padding:28px 40px;display:flex;justify-content:space-between;color:#bbc5e1;font-size:12px}.badge{padding:7px 11px;border:1px solid #b0a5ff30;border-radius:30px;background:#090e2277;font-size:10px;letter-spacing:.12em}.content{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px}.hero{margin-top:-60px;max-width:650px}.eyebrow{color:#c0b6ff;letter-spacing:.35em;font-size:10px;margin-bottom:28px}.symbol{font-size:42px;color:#bdb7ff;margin-bottom:18px}h1{font-size:clamp(30px,4vw,50px);font-weight:400;letter-spacing:.08em;margin:0 0 20px;text-shadow:0 2px 30px #040817}p{color:#b7c2df;line-height:1.9;font-size:14px}.chips{display:flex;gap:10px;justify-content:center;margin-top:30px}.chip{padding:10px 16px;border:1px solid #b0a5ff25;border-radius:30px;background:#0b132655;color:#d0d6ec;font-size:12px}.composer{margin:0 auto 40px;width:min(740px,85%);padding:18px 20px;border:1px solid #b5b7ec35;border-radius:20px;background:#10182d99;box-shadow:0 15px 60px #0003}.composer textarea{resize:none;width:100%;border:0;outline:0;background:transparent;color:#edf0ff;font:inherit;height:48px}.composer textarea::placeholder{color:#a6b1ce}.tools{display:flex;justify-content:space-between;align-items:center;color:#a5b0ce;font-size:12px}.send{background:#c5baff;border:0;border-radius:10px;color:#15152f;width:32px;height:32px}.switches{display:flex;gap:7px}.switches button{border:1px solid #b0a5ff33;background:#10182d99;border-radius:8px;padding:5px 9px;font-size:11px}#status{font-size:11px;color:#a1aecf}#status::before{content:'● ';color:#94d6c8}@media(max-width:700px){#root{grid-template-columns:1fr}.sidebar{display:none}.top{padding:20px}.chips{flex-wrap:wrap}}
+</style>
+<div id="root"><aside class="sidebar" data-galaxy-panel><div class="brand"><span>✧</span> deepseek harness</div><button class="new">＋　开始新对话</button><div><div class="caption">RECENT ORBITS</div><div class="sessions"><div class="session active">✦　探索未被发现的灵感</div><div class="session">星河主题设计</div><div class="session">构建下一件好作品</div></div></div><div class="foot"><div id="status">正在唤醒星河…</div><div class="switches"><button id="galaxy">星河</button><button id="light">浅色</button><button id="dispose">停用</button></div><div>✧　星河 / GALAXY　·　0.1.3</div></div></aside><main class="main"><header class="top"><span>你的工作空间</span><span class="badge">PROCEDURAL UNIVERSE</span></header><section class="content"><div class="hero"><div class="eyebrow">A LITTLE CLOSER TO THE STARS</div><div class="symbol">✧</div><h1>让灵感，漫游星河。</h1><p>在浩瀚与宁静之间，开始下一次探索。<br>每一个想法，都有自己的引力。</p><div class="chips"><button class="chip">✦　一起构思新想法</button><button class="chip">⌘　探索我的代码</button><button class="chip">↗　开始一项研究</button></div></div></section><div class="composer" data-galaxy-panel><textarea placeholder="向星河抛出一个想法…"></textarea><div class="tools"><span>＋　⌘　DeepSeek V4</span><button class="send">↑</button></div></div></main></div>
+<script>
+let plugin, snapshot = {preference:'dark',active:{id:'dark',colorScheme:'dark',tokens:{}}};
+const definitions = new Map([['dark',snapshot.active],['light',{id:'light',colorScheme:'light',tokens:{}}]]);
+const listeners = new Set(), disposers = [];
+let overrides = {};
+function paint(){for(const k of [...document.body.style])document.body.style.removeProperty(k);for(const [k,v] of Object.entries(overrides))document.body.style.setProperty(k,v.light)}
+const theme = {
+ getTheme:()=>snapshot,
+ overrideTokens(source,values){overrides=values;paint();return()=>{overrides={};paint()}},
+ register(def){definitions.set(def.id,def);return()=>{definitions.delete(def.id);if(snapshot.active.id===def.id)theme.setTheme('dark')}},
+ setTheme(id){snapshot={preference:id,active:definitions.get(id)};paint();for(const fn of listeners)fn(snapshot)}
+};
+window.__ModuleLoader__={load({factory}){plugin=factory(()=>{throw Error('Unexpected runtime import')})}};
+window.addEventListener('error',e=>fetch('/report',{method:'POST',body:JSON.stringify({error:e.message})}));
+window.addEventListener('unhandledrejection',e=>fetch('/report',{method:'POST',body:JSON.stringify({rejection:String(e.reason)})}));
+</script>
+<script src="/client.js"></script><script>
+const ctx={theme,effect(fn){const d=fn();if(d)disposers.push(d)},on(event,fn){listeners.add(fn);disposers.push(()=>listeners.delete(fn))}};
+plugin.apply(ctx);
+document.querySelector('#galaxy').onclick=()=>theme.setTheme('dark');
+document.querySelector('#light').onclick=()=>theme.setTheme('light');
+document.querySelector('#dispose').onclick=()=>{for(const d of disposers.reverse())d();document.querySelector('#status').textContent='已停用 · GPU 资源已释放';fetch('/report',{method:'POST',body:JSON.stringify({disposed:!document.querySelector('[data-galaxy-sky]'),styles:document.querySelectorAll('style[data-plugin]').length})})};
+let last='';setInterval(()=>{const canvas=document.querySelector('canvas');const state=canvas?.dataset.galaxyRenderer||'inactive';if(state!==last){last=state;document.querySelector('#status').textContent=state==='webgpu'?'WebGPU · 实时星河':state;fetch('/report',{method:'POST',body:JSON.stringify({renderer:state,width:canvas?.width,height:canvas?.height,secure:isSecureContext,gpu:!!navigator.gpu})})}},500);
+</script></html>
