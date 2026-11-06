@@ -6,6 +6,14 @@ DeepSeek Harness 的独立皮肤插件。用原生 WebGPU / WGSL 实时渲染紫
 
 ## 安装
 
+从 npm 安装（推荐，版本固定、可校验完整性）：
+
+```sh
+dsh plugin --profile web add dsh-skin-galaxy
+```
+
+也可以直接跟踪 GitHub 仓库的最新提交：
+
 ```sh
 dsh plugin --profile web add github:haoranx98/dsh-skin-galaxy
 ```
