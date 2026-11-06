@@ -2,7 +2,10 @@
 
 DeepSeek Harness 的独立皮肤插件。用原生 WebGPU / WGSL 实时渲染紫蓝星云、斜贯视野的银河尘带、远近星点与轻微闪烁，配合深空色调、淡紫强调色及半透明侧栏和输入框。无运行时 CDN、图片下载、视频、遥测或额外运行时依赖。
 
-![星河皮肤在 DSH Web 中的实际界面](screenshots/dsh-galaxy.png)
+![星河皮肤在 DSH Web 中的实际界面（WebGPU 实时渲染动图）](screenshots/dsh-galaxy.gif)
+
+<sub>动图是从真实 WebGPU 出帧逐帧抓取的循环（20 帧）；静态截见图 [`screenshots/dsh-galaxy.png`](screenshots/dsh-galaxy.png)。</sub>
+
 
 ## 安装
 
@@ -31,6 +34,30 @@ dsh web
 ```sh
 dsh plugin --profile web add /绝对路径/dsh-skin-galaxy
 ```
+
+## 让 Agent 帮你安装
+
+不想自己敲命令，可以把下面整段复制给 DSH Agent（或任何能操作本机终端的 Agent），它会先只读确认环境，再按 Web / Desktop 分别处理：
+
+```text
+请帮我安装 DSH 皮肤「星河 Galaxy」：npm 包名 dsh-skin-galaxy，仓库 https://github.com/haoranx98/dsh-skin-galaxy 。
+
+先只读确认三件事，不要猜：当前是 DSH Web 还是官方 Desktop、实际的 dsh 版本、以及正在使用的 profile 名称。判断不出来就直接问我。
+
+- DSH Web：执行 dsh plugin --profile web add dsh-skin-galaxy；完成后核对同一个 profile 的 package.json 依赖和 bundles 里都有 dsh-skin-galaxy，并确认安装的版本号。然后请我在「设置 → 插件」里停用其他普通皮肤（只保留皮肤市场和本皮肤），再重启 dsh web 并刷新页面。
+- 官方 Desktop：你只做只读核查和操作指导，不要执行 dsh plugin --profile desktop、pnpm 或其他安装命令，也不要修改 Desktop profile。每次只给一步，等我反馈后再继续：打开「插件 → 添加插件」、输入 dsh-skin-galaxy、确认安装结果、按应用提示启用；需要重启时指导我完全退出并重新打开应用（仅关闭窗口不算）。
+
+收尾要求：
+1. 明确告诉我怎么确认皮肤真的生效了（插件页里 dsh-skin-galaxy 的状态、页面是否出现星河背景、开发者控制台有没有 WebGPU 报错）。
+2. 提醒我不要同时启用第二个普通皮肤，否则可能出现「星河背景 + 白侧栏」的冲突。
+3. 不要读取 .env、凭据或聊天记录；不要替我安装其他皮肤；没有实际验证过就不要声称安装成功或皮肤已生效。
+
+说明：本皮肤在 DSH Web（0.2.2-alpha.2）上验证通过；Desktop 尚未实测，若安装后没有效果，请停用 dsh-skin-galaxy 并反馈。
+```
+
+## 0.1.5 动图预览与 Agent 安装提示词
+
+README 顶部换成实时渲染的动图：用无头 Chrome 打开本仓库 `preview/` 演示页，等 WebGPU 真正开始出帧后逐帧抓取 20 帧再编码成 GIF，画面来自实际着色器而不是后期合成的示意图。同时新增「让 Agent 帮你安装」提示词，复制给 Agent 即可由它判断宿主类型并完成安装。外观与行为与 0.1.4 相同。
 
 ## 0.1.4 发布到 npm
 
