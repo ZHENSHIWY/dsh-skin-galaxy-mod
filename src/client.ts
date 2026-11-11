@@ -2,6 +2,8 @@ import type { Context } from '@deepseek-ai/cordis';
 import type {} from '@deepseek-ai/dsh-client-ui-theme/client';
 import { resolveConfig, type GalaxyConfig } from './config.ts';
 import { mountGalaxy } from './renderer.ts';
+import { showBootOverlay } from './boot.ts';
+import { bootStyles } from './bootStyles.ts';
 import { styles, tokens } from './styles.ts';
 
 /** Required browser service: the supported theme registry. */
@@ -14,7 +16,7 @@ export function apply(ctx: Context, input: Partial<GalaxyConfig> = {}): void {
   ctx.effect(() => ctx.theme.overrideTokens('dsh-skin-galaxy',overrides), 'galaxy: palette');
   ctx.effect(() => {
     const style = document.createElement('style');
-    style.dataset.plugin = 'dsh-skin-galaxy'; style.textContent = styles;
+    style.dataset.plugin = 'dsh-skin-galaxy'; style.textContent = styles + bootStyles;
     document.head.append(style);
     const sky = document.createElement('div'); sky.dataset.galaxySky = '';
     sky.setAttribute('aria-hidden','true');
@@ -26,6 +28,10 @@ export function apply(ctx: Context, input: Partial<GalaxyConfig> = {}): void {
       delete document.body.dataset.galaxyActive;
     };
   }, 'galaxy: presentation');
+  if (config.bootAnimation) {
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    ctx.effect(() => showBootOverlay(config.bootDuration, reducedMotion), 'galaxy: boot animation');
+  }
   ctx.effect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key !== 'F11') return;

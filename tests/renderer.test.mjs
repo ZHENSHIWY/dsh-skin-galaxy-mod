@@ -38,7 +38,9 @@ function fixture({ reduced = false, gpu = true, delayedDevice = false, shaderErr
 }
 test('validates rendering controls at the config boundary',()=>{
   assert.equal(resolveConfig().fps,30);
-  for(const bad of [{fps:0},{speed:NaN},{pixelRatio:5},{intensity:Infinity}])assert.throws(()=>resolveConfig(bad),/config\./);
+  assert.equal(resolveConfig().bootAnimation,true);
+  assert.equal(resolveConfig().bootDuration,2000);
+  for(const bad of [{fps:0},{speed:NaN},{pixelRatio:5},{intensity:Infinity},{bootDuration:100},{bootAnimation:'yes'}])assert.throws(()=>resolveConfig(bad),/config\./);
 });
 test('renders with WebGPU, bounds resolution, suspends hidden tabs and frees resources',async()=>{
   const f=fixture();try{

@@ -6,3 +6,5 @@
         intensity: 0.8
         pixelRatio: 1.25
         fps: 30
+        bootAnimation: true
+        bootDuration: 2000
