@@ -2,7 +2,7 @@ import type { Context } from '@deepseek-ai/cordis';
 import type {} from '@deepseek-ai/dsh-client-ui-theme/client';
 import { resolveConfig, type GalaxyConfig } from './config.ts';
 import { mountGalaxy } from './renderer.ts';
-import { showBootOverlay } from './boot.ts';
+import { createBootReplayButton, shouldPlayBootOnce, showBootOverlay } from './boot.ts';
 import { bootStyles } from './bootStyles.ts';
 import { styles, tokens } from './styles.ts';
 
@@ -30,7 +30,26 @@ export function apply(ctx: Context, input: Partial<GalaxyConfig> = {}): void {
   }, 'galaxy: presentation');
   if (config.bootAnimation) {
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    ctx.effect(() => showBootOverlay({ duration: config.bootDuration, revealDelay: config.bootRevealDelay, revealDuration: config.bootRevealDuration, reducedMotion }), 'galaxy: boot animation');
+    let disposeBoot: (() => void) | undefined;
+    const playBoot = (): void => {
+      disposeBoot?.();
+      disposeBoot = showBootOverlay({
+        duration: config.bootDuration,
+        revealDelay: config.bootRevealDelay,
+        revealDuration: config.bootRevealDuration,
+        reducedMotion,
+      });
+    };
+    const autoPlay = shouldPlayBootOnce();
+    ctx.effect(() => {
+      const removeButton = createBootReplayButton(playBoot);
+      if (autoPlay) playBoot();
+      return () => {
+        removeButton();
+        disposeBoot?.();
+        disposeBoot = undefined;
+      };
+    }, 'galaxy: boot and replay');
   }
   ctx.effect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {

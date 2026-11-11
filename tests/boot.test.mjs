@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { showBootOverlay } from '../src/boot.ts';
+import { createBootReplayButton, shouldPlayBootOnce, showBootOverlay } from '../src/boot.ts';
 
 function fixture() {
   const saved = new Map();
@@ -30,6 +30,8 @@ function fixture() {
   save('window', { listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; }, removeEventListener(type) { delete this.listeners[type]; } });
   save('setTimeout', (fn, ms) => { const id = nextTimer++; timers.set(id, { fn, ms }); return id; });
   save('clearTimeout', (id) => { timers.delete(id); });
+  const storage = new Map();
+  save('sessionStorage', { getItem: (key) => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)) });
   return {
     overlay,
     body,
@@ -89,5 +91,26 @@ test('reduced motion shortens the intro and skips the background hold', () => {
     assert.equal(f.body.dataset.galaxyBootReveal, 'hidden');
     assert.equal(f.runNext(), 0);
     assert.equal(f.body.dataset.galaxyBootReveal, 'shown');
+  } finally { f.restore(); }
+});
+test('the boot flag plays only once per browser session', () => {
+  const f = fixture();
+  try {
+    assert.equal(shouldPlayBootOnce(), true);
+    assert.equal(shouldPlayBootOnce(), false);
+  } finally { f.restore(); }
+});
+
+test('the replay button invokes the boot callback and can be removed', () => {
+  const f = fixture();
+  try {
+    let calls = 0;
+    const cleanup = createBootReplayButton(() => { calls += 1; });
+    assert.equal(f.body.appended.length, 1);
+    f.overlay.listeners.click();
+    assert.equal(calls, 1);
+    cleanup();
+    assert.equal(f.overlay.listeners.click, undefined);
+    assert.equal(f.overlay.removed, 1);
   } finally { f.restore(); }
 });

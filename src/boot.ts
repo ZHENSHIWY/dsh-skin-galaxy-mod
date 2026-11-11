@@ -1,9 +1,22 @@
+const BOOT_FLAG = 'dsh-skin-galaxy:booted';
+
 /** Full-screen, skippable galaxy intro followed by a background-only hold and UI reveal. */
 export interface BootOptions {
   duration: number;
   revealDelay: number;
   revealDuration: number;
   reducedMotion: boolean;
+}
+
+/** Show the boot sequence once per browser session. */
+export function shouldPlayBootOnce(): boolean {
+  try {
+    if (sessionStorage.getItem(BOOT_FLAG)) return false;
+    sessionStorage.setItem(BOOT_FLAG, '1');
+    return true;
+  } catch {
+    return true;
+  }
 }
 
 export function showBootOverlay(options: BootOptions): () => void {
@@ -78,5 +91,22 @@ export function showBootOverlay(options: BootOptions): () => void {
     cleanupListeners();
     delete document.body.dataset.galaxyBootReveal;
     document.body.style.removeProperty('--galaxy-reveal-duration');
+  };
+}
+
+/** Small top-of-window control that replays the intro on demand. */
+export function createBootReplayButton(onReplay: () => void): () => void {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.dataset.galaxyReplay = '';
+  button.textContent = '✦ 重播开屏';
+  button.setAttribute('aria-label', '重播星河开屏动画');
+  button.setAttribute('title', '重播星河开屏动画');
+  const onClick = (): void => onReplay();
+  button.addEventListener('click', onClick);
+  document.body.append(button);
+  return () => {
+    button.removeEventListener('click', onClick);
+    button.remove();
   };
 }

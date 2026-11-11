@@ -100,4 +100,34 @@ body[data-galaxy-boot-reveal="shown"] [data-windows-menu] {
   pointer-events: auto;
   transition: opacity var(--galaxy-reveal-duration, 800ms) ease-out;
   transition-delay: 180ms;
+}
+[data-galaxy-replay] {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147482000;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid rgba(176,187,239,.28);
+  border-radius: 999px;
+  background: rgba(10,16,34,.55);
+  color: #e9ecff;
+  font: 12px/1 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+  opacity: .72;
+  -webkit-app-region: no-drag;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity .2s ease, background-color .2s ease, border-color .2s ease;
+}
+[data-galaxy-replay]:hover {
+  opacity: 1;
+  background: rgba(30,43,70,.75);
+  border-color: rgba(176,165,255,.55);
+}
+body[data-galaxy-boot-reveal] [data-galaxy-replay] {
+  opacity: 0;
+  pointer-events: none;
 }`;
