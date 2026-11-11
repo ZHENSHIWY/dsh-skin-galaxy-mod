@@ -68,7 +68,7 @@ fn shootingStar(p: vec2f) -> vec3f {
 @fragment fn fragment(@builtin(position) pixel: vec4f) -> @location(0) vec4f {
   let uv = pixel.xy/u.resolution;
   let p = (pixel.xy-u.resolution*0.5)/u.resolution.y;
-  let drift = vec2f(u.time*0.012, u.time*0.004);
+  let drift = vec2f(sin(u.time*0.040)*0.16, sin(u.time*0.040+1.7)*0.10);
   let q = p+drift;
   // Broad clouds curl while fine wisps stream through them at a different speed.
   let flow = vec2f(sin(q.y*2.4+u.time*0.25), cos(q.x*2.1-u.time*0.19))*0.08;

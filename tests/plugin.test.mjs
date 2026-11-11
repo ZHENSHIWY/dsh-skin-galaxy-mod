@@ -12,7 +12,7 @@ test('shipped client factory retains the skin through Host appearance hydration 
   };
   const body={dataset:{},prepend(node){nodes.add(node)}};
   const sandbox={
-    window:{__ModuleLoader__:{load({factory}){plugin=factory(()=>{throw Error('runtime imports must remain empty')})}}},
+    window:{__ModuleLoader__:{load({factory}){plugin=factory(()=>{throw Error('runtime imports must remain empty')})}},addEventListener(){},removeEventListener(){}},
     document:{body,head:{append(node){nodes.add(node)}},hidden:false,addEventListener(){},removeEventListener(){}},
     navigator:{},console:{warn(){}},
     matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),

@@ -26,4 +26,15 @@ export function apply(ctx: Context, input: Partial<GalaxyConfig> = {}): void {
       delete document.body.dataset.galaxyActive;
     };
   }, 'galaxy: presentation');
+  ctx.effect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== 'F11') return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else void document.documentElement.requestFullscreen();
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, 'galaxy: fullscreen hotkey');
 }
