@@ -30,7 +30,7 @@ export function apply(ctx: Context, input: Partial<GalaxyConfig> = {}): void {
   }, 'galaxy: presentation');
   if (config.bootAnimation) {
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    ctx.effect(() => showBootOverlay(config.bootDuration, reducedMotion), 'galaxy: boot animation');
+    ctx.effect(() => showBootOverlay({ duration: config.bootDuration, revealDelay: config.bootRevealDelay, revealDuration: config.bootRevealDuration, reducedMotion }), 'galaxy: boot animation');
   }
   ctx.effect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {

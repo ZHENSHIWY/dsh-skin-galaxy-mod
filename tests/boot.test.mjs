@@ -1,4 +1,4 @@
-﻿import { test } from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { showBootOverlay } from '../src/boot.ts';
 
@@ -18,43 +18,76 @@ function fixture() {
     removed: 0,
     remove() { this.removed += 1; },
   };
-  let timerFn, timerMs = 0, cleared = 0;
-  save('document', { createElement: () => overlay, body: { appended: [], append(node) { this.appended.push(node); } } });
+  const body = {
+    dataset: {},
+    style: { props: {}, setProperty(key, value) { this.props[key] = value; }, removeProperty(key) { delete this.props[key]; } },
+    appended: [],
+    append(node) { this.appended.push(node); },
+  };
+  const timers = new Map();
+  let nextTimer = 1;
+  save('document', { createElement: () => overlay, body });
   save('window', { listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; }, removeEventListener(type) { delete this.listeners[type]; } });
-  save('setTimeout', (fn, ms) => { timerFn = fn; timerMs = ms; return 7; });
-  save('clearTimeout', () => { cleared += 1; });
+  save('setTimeout', (fn, ms) => { const id = nextTimer++; timers.set(id, { fn, ms }); return id; });
+  save('clearTimeout', (id) => { timers.delete(id); });
   return {
     overlay,
-    get timerFn() { return timerFn; },
-    get timerMs() { return timerMs; },
-    get cleared() { return cleared; },
+    body,
+    get timers() { return [...timers.values()]; },
+    runNext() {
+      const first = timers.entries().next().value;
+      if (!first) return undefined;
+      const [id, timer] = first;
+      timers.delete(id);
+      timer.fn();
+      return timer.ms;
+    },
     restore() { for (const [key, descriptor] of saved) { if (descriptor) Object.defineProperty(globalThis, key, descriptor); else delete globalThis[key]; } },
   };
 }
 
-test('boot overlay is skippable and has an idempotent cleanup', () => {
+test('boot sequence is skippable and cleans its reveal state', () => {
   const f = fixture();
   try {
-    const cleanup = showBootOverlay(2000, false);
-    assert.equal(f.overlay.dataset.galaxyBoot, '');
-    assert.equal(f.overlay.style.props['--galaxy-boot-duration'], '2000ms');
-    assert.equal(typeof f.timerFn, 'function');
-    f.overlay.listeners.pointerdown();
+    const cleanup = showBootOverlay({ duration: 2000, revealDelay: 1200, revealDuration: 800, reducedMotion: false });
+    assert.equal(f.body.dataset.galaxyBootReveal, 'hidden');
+    assert.equal(f.body.style.props['--galaxy-reveal-duration'], '800ms');
+    assert.equal(f.timers[0].ms, 2000);
+    f.overlay.listeners.pointerdown({ preventDefault() {}, stopImmediatePropagation() {} });
     assert.equal(f.overlay.removed, 1);
     assert.equal(f.overlay.listeners.pointerdown, undefined);
+    assert.equal(f.body.dataset.galaxyBootReveal, 'shown');
+    assert.equal(f.runNext(), 900);
+    assert.equal(f.body.dataset.galaxyBootReveal, undefined);
+    assert.equal(f.body.style.props['--galaxy-reveal-duration'], undefined);
     cleanup();
     assert.equal(f.overlay.removed, 1);
-    assert.ok(f.cleared >= 1);
   } finally { f.restore(); }
 });
 
-test('boot overlay auto-closes and reduced motion shortens its timer', () => {
+test('boot sequence holds the full background before revealing the UI', () => {
   const f = fixture();
   try {
-    showBootOverlay(3000, true);
-    assert.equal(f.overlay.dataset.galaxyBootReduced, '');
-    assert.equal(f.timerMs, 450);
-    f.timerFn();
+    showBootOverlay({ duration: 2000, revealDelay: 1200, revealDuration: 800, reducedMotion: false });
+    assert.equal(f.runNext(), 2000);
     assert.equal(f.overlay.removed, 1);
+    assert.equal(f.body.dataset.galaxyBootReveal, 'hidden');
+    assert.equal(f.runNext(), 1200);
+    assert.equal(f.body.dataset.galaxyBootReveal, 'shown');
+    assert.equal(f.runNext(), 900);
+    assert.equal(f.body.dataset.galaxyBootReveal, undefined);
+  } finally { f.restore(); }
+});
+
+test('reduced motion shortens the intro and skips the background hold', () => {
+  const f = fixture();
+  try {
+    showBootOverlay({ duration: 3000, revealDelay: 1200, revealDuration: 800, reducedMotion: true });
+    assert.equal(f.overlay.dataset.galaxyBootReduced, '');
+    assert.equal(f.body.style.props['--galaxy-reveal-duration'], '180ms');
+    assert.equal(f.runNext(), 450);
+    assert.equal(f.body.dataset.galaxyBootReveal, 'hidden');
+    assert.equal(f.runNext(), 0);
+    assert.equal(f.body.dataset.galaxyBootReveal, 'shown');
   } finally { f.restore(); }
 });

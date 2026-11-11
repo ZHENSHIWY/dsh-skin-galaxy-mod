@@ -8,3 +8,5 @@
         fps: 30
         bootAnimation: true
         bootDuration: 2000
+        bootRevealDelay: 1200
+        bootRevealDuration: 800

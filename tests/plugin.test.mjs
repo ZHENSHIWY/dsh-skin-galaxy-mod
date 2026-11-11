@@ -10,7 +10,7 @@ test('shipped client factory retains the skin through Host appearance hydration 
     const node={tag,dataset:{},style:{setProperty(){}},setAttribute(){},append(child){node.child=child},addEventListener(){},removeEventListener(){},remove(){nodes.delete(node)}};
     return node;
   };
-  const body={dataset:{},prepend(node){nodes.add(node)},append(node){nodes.add(node)}};
+  const body={dataset:{},style:{setProperty(){},removeProperty(){}},prepend(node){nodes.add(node)},append(node){nodes.add(node)}};
   const sandbox={
     window:{__ModuleLoader__:{load({factory}){plugin=factory(()=>{throw Error('runtime imports must remain empty')})}},addEventListener(){},removeEventListener(){}},
     document:{body,head:{append(node){nodes.add(node)}},hidden:false,addEventListener(){},removeEventListener(){}},

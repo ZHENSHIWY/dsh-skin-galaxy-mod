@@ -40,7 +40,9 @@ test('validates rendering controls at the config boundary',()=>{
   assert.equal(resolveConfig().fps,30);
   assert.equal(resolveConfig().bootAnimation,true);
   assert.equal(resolveConfig().bootDuration,2000);
-  for(const bad of [{fps:0},{speed:NaN},{pixelRatio:5},{intensity:Infinity},{bootDuration:100},{bootAnimation:'yes'}])assert.throws(()=>resolveConfig(bad),/config\./);
+  assert.equal(resolveConfig().bootRevealDelay,1200);
+  assert.equal(resolveConfig().bootRevealDuration,800);
+  for(const bad of [{fps:0},{speed:NaN},{pixelRatio:5},{intensity:Infinity},{bootDuration:100},{bootRevealDelay:-1},{bootRevealDuration:50},{bootAnimation:'yes'}])assert.throws(()=>resolveConfig(bad),/config\./);
 });
 test('renders with WebGPU, bounds resolution, suspends hidden tabs and frees resources',async()=>{
   const f=fixture();try{

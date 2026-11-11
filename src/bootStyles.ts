@@ -1,4 +1,4 @@
-﻿export const bootStyles = `
+export const bootStyles = `
 [data-galaxy-boot] {
   position: fixed; inset: 0; z-index: 2147483646; overflow: hidden;
   display: grid; place-items: center; pointer-events: auto;
@@ -56,4 +56,38 @@
   [data-galaxy-boot]::before, [data-galaxy-boot]::after { animation: none; }
   [data-galaxy-boot]::before { opacity: 1; }
 }
-`;
+
+body[data-galaxy-boot-reveal="hidden"] #root {
+  opacity: 0;
+  pointer-events: none;
+}
+body[data-galaxy-boot-reveal="shown"] #root {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--galaxy-reveal-duration, 800ms) ease-out;
+}
+body[data-galaxy-boot-reveal="hidden"] [class*="_sidebarCol"],
+body[data-galaxy-boot-reveal="hidden"] [class*="_centerCol"],
+body[data-galaxy-boot-reveal="hidden"] [class*="_rightbarCol"] {
+  opacity: 0;
+  transform: translateY(8px);
+}
+body[data-galaxy-boot-reveal="shown"] [class*="_sidebarCol"],
+body[data-galaxy-boot-reveal="shown"] [class*="_centerCol"],
+body[data-galaxy-boot-reveal="shown"] [class*="_rightbarCol"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--galaxy-reveal-duration, 800ms) ease-out,
+    transform var(--galaxy-reveal-duration, 800ms) ease-out;
+}
+body[data-galaxy-boot-reveal="shown"] [class*="_sidebarCol"] { transition-delay: 0ms; }
+body[data-galaxy-boot-reveal="shown"] [class*="_centerCol"] { transition-delay: 120ms; }
+body[data-galaxy-boot-reveal="shown"] [class*="_rightbarCol"] { transition-delay: 240ms; }
+@media (prefers-reduced-motion: reduce) {
+  body[data-galaxy-boot-reveal="shown"] #root,
+  body[data-galaxy-boot-reveal="shown"] [class*="_sidebarCol"],
+  body[data-galaxy-boot-reveal="shown"] [class*="_centerCol"],
+  body[data-galaxy-boot-reveal="shown"] [class*="_rightbarCol"] {
+    transition: none;
+  }
+}`;
